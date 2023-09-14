@@ -1,0 +1,11 @@
+export PORT=4000
+export STORAGE_ACCOUNT_NAME=<storage_account_name>
+export STORAGE_ACCESS_KEY=<storage_access_key>
+
+if [[ $1 && "$1" -eq "dev" ]]; then
+  echo "npm run start:dev"
+  npm run start:dev
+else
+  echo "npm run build && npm start"
+  npm run build && npm start
+fi
