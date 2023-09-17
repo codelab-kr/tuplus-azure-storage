@@ -1,0 +1,26 @@
+export PORT=4001
+export STORAGE_ACCOUNT_NAME=<STORAGE_ACCOUNT_NAME>
+export STORAGE_ACCESS_KEY=<STORAGE_ACCESS_KEY>
+
+if docker ps | grep db > /dev/null; then
+  echo "db is running"
+else
+  docker run --name db -d -p 4000:27017 mongo:7
+fi
+
+if docker ps | grep rabbit > /dev/null; then
+  echo "rabbit is running"
+else
+  docker run --name rabbit -d -p 5672:5672 -p 15672:15672 rabbitmq:3.12.4-management-alpine
+  sleep 3 && npx wait-port localhost:5672
+fi
+
+npm install --prefer-offline --no-audit
+
+if [[ $1 && "$1" -eq "dev" ]]; then
+  echo "npm run start:dev"
+  npm run start:dev
+else
+  echo "npm run build && npm start"
+  npm run build && npm start
+fi

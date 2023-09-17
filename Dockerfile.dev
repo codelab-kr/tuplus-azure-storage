@@ -1,5 +1,6 @@
 FROM node:18.17.1-alpine3.17
 WORKDIR /usr/src/app
-COPY . .
-RUN npm ci
-CMD ["npm", "run", "start:dev"]
+COPY *.json ./
+CMD npm install --prefer-offline --no-audit && \
+  npx wait-port rabbit:5672 && \
+  npm run start:dev
