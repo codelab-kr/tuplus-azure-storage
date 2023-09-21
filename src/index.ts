@@ -25,19 +25,26 @@ function createBlobService() {
 async function main(): Promise<void> {
   // http://localhost:4001/video?path=sample.mp4
   app.get("/video", async (req, res) => {
-    const videoPath = req.query.path;
+
+    const videoId = req.query.id as string;
     const containerName = "videos";
+
     const blobService = createBlobService();
     const containerClient = blobService.getContainerClient(containerName);
-    const blobClient = containerClient.getBlobClient(videoPath as string);
+    const blobClient = containerClient.getBlobClient(videoId);
     const properties = await blobClient.getProperties();
+
+    //
+    // Writes HTTP headers to the response.
+    //
     res.writeHead(200, {
-      "Content-Length": properties.contentLength,
-      "Content-Type": "video/mp4",
+        "Content-Length": properties.contentLength,
+        "Content-Type": "video/mp4",
     });
+
     const response = await blobClient.download();
     response.readableStreamBody?.pipe(res);
-  });
+});
   app.listen(PORT, () => {
     console.log(`Microservice online on port ${PORT}....`);
   });
