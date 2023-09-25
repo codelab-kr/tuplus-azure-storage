@@ -1,6 +1,6 @@
+#!/bin/bash
+
 export PORT=4001
-export STORAGE_ACCOUNT_NAME=<STORAGE_ACCOUNT_NAME>
-export STORAGE_ACCESS_KEY=<STORAGE_ACCESS_KEY>
 
 if docker ps | grep db > /dev/null; then
   echo "db is running"
