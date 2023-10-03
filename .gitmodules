@@ -1,3 +1,0 @@
-[submodule "azure-storage"]
-	path = azure-storage
-	url = https://github.com/codelab-kr/tuplus-azure-storage.git
