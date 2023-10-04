@@ -16,6 +16,8 @@ if (!STORAGE_ACCOUNT_NAME)
   throw Error('Azure Storage STORAGE_ACCOUNT_NAME not found');
 if (!STORAGE_ACCESS_KEY)
   throw Error('Azure Storage STORAGE_ACCESS_KEY not found');
+if (!STORAGE_CONTAINER_NAME)
+  throw Error('Azure Storage STORAGE_CONTAINER_NAME not found');
 
 function createBlobService() {
   const sharedKeyCredential = new StorageSharedKeyCredential(
@@ -30,10 +32,9 @@ function createBlobService() {
 }
 
 async function main(): Promise<void> {
-  // http://localhost:4001/video?path=sample.mp4
   app.get('/video', async (req, res) => {
     const videoId = req.query.id as string;
-    const containerName = 'videos';
+    const containerName = STORAGE_CONTAINER_NAME;
 
     const blobService = createBlobService();
     const containerClient = blobService.getContainerClient(containerName);
