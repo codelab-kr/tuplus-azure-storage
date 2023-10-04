@@ -9,6 +9,7 @@ const app = express();
 const PORT = process.env.PORT as string;
 const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME as string;
 const STORAGE_ACCESS_KEY = process.env.STORAGE_ACCESS_KEY as string;
+const STORAGE_CONTAINER_NAME = process.env.STORAGE_CONTAINER_NAME as string;
 
 if (!PORT) throw Error('Azure Storage PORT not found');
 if (!STORAGE_ACCOUNT_NAME)
@@ -50,6 +51,31 @@ async function main(): Promise<void> {
     const response = await blobClient.download();
     response.readableStreamBody?.pipe(res);
   });
+
+  //
+  // HTTP POST route to upload a video to Azure storage.
+  //
+  app.post('/upload', async (req, res) => {
+    const videoId = req.headers.id;
+    const contentType = req.headers['content-type'];
+
+    const blobService = createBlobService();
+
+    const containerClient = blobService.getContainerClient(
+      STORAGE_CONTAINER_NAME,
+    );
+    await containerClient.createIfNotExists(); // Creates the container if it doesn't already exist.
+
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      videoId as string,
+    );
+    await blockBlobClient.uploadStream(req);
+    await blockBlobClient.setHTTPHeaders({
+      blobContentType: contentType,
+    });
+    res.sendStatus(200);
+  });
+
   app.listen(PORT, () => {
     console.log(`Microservice online on port ${PORT}....`);
   });
